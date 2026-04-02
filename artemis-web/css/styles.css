@@ -18,10 +18,11 @@ body {
 
 /* ESCENA */
 .scene {
-  position: relative;
-  width: 100%;
-  padding-top: 60%; /* Mantener proporción */
-   transform-style: preserve-3d;
+    position: relative;
+    width: 100vw;
+    height: 100vh;
+    perspective: 1200px;
+    transform-style: preserve-3d;
 }
 
 /* ESTRELLAS */
@@ -49,41 +50,50 @@ body {
   transform: translate(-50%, -50%);
 }
 
+.earth, .moon, .orbit {
+    position: absolute;
+    top: 50%; /* Centro vertical */
+    transform-style: preserve-3d;
+}
+
 /* TIERRA */
 .earth {
-  width: 12%;
-  height: 12%;
-  left: 35%;
-  top: 50%;
-  background-image: url("https://upload.wikimedia.org/wikipedia/commons/9/97/The_Earth_seen_from_Apollo_17.jpg");
-  background-size: cover;
-  border-radius: 50%;
-  box-shadow: 0 0 2vw rgba(0,150,255,0.6), 0 0 30px rgba(0,0,0,0.3);
+    width: 180px;
+    height: 180px;
+    left: 20%; /* Anclamos la Tierra al 20% del ancho */
+    transform: translate(-50%, -50%);
+    background-image: url("https://upload.wikimedia.org/wikipedia/commons/9/97/The_Earth_seen_from_Apollo_17.jpg");
+    background-size: cover;
+    border-radius: 50%;
+    box-shadow: inset -20px -20px 50px rgba(0,0,0,0.9), 0 0 40px rgba(0,150,255,0.4);
+    z-index: 10;
 }
 
 
 /* LUNA */
 .moon {
-  width: 8%;
-  height: 8%;
-  left: 80%;
-  top: 50%;
-  background-image: url("https://upload.wikimedia.org/wikipedia/commons/e/e1/FullMoon2010.jpg");
-  background-size: cover;
-  border-radius: 50%;
-  box-shadow: 0 0 1.5vw rgba(255,255,255,0.4), 0 0 20px rgba(0,0,0,0.2);
+    width: 60px;
+    height: 60px;
+    left: 85%; /* Anclamos la Luna al 85% */
+    transform: translate(-50%, -50%);
+    background-image: url("https://upload.wikimedia.org/wikipedia/commons/e/e1/FullMoon2010.jpg");
+    background-size: cover;
+    border-radius: 50%;
+    box-shadow: inset -10px -10px 30px rgba(0,0,0,0.8), 0 0 20px rgba(255,255,255,0.2);
+    z-index: 5;
 }
 
 /* ORBITA */
 .orbit {
-  width: 35%;
-  height: 35%;
-  left: 35%;
-  top: 50%;
-  border: 1px dashed rgba(255,255,255,0.2);
-  border-radius: 50%;
-  box-shadow: 0 0 50px rgba(255,255,255,0.05); /* halo sutil */
-  z-index: 2;
+    /* El ancho es la distancia entre 20% y 85% (65% del total) */
+    width: 65%; 
+    height: 30%; 
+    left: 52.5%; /* El centro exacto entre 20% y 85% */
+    border: 2px dashed rgba(255, 255, 255, 0.15);
+    border-radius: 50%;
+    transform: translate(-50%, -50%) rotateX(75deg);
+    pointer-events: none;
+    z-index: 1;
 }
 
 /* COHETE */
@@ -134,6 +144,7 @@ body {
   from { transform: scaleY(1); opacity: 0.8; }
   to { transform: scaleY(1.5); opacity: 0.4; }
 }
+
 
 
 .hud .value {
@@ -215,3 +226,36 @@ body {
 .earth, .moon { z-index: 3; }
 .rocket { z-index: 4; }
 .hud { z-index: 5; } /* siempre arriba */
+
+
+.value-elapsed {
+    color: #00ffc3 !important;
+    font-family: 'Courier New', Courier, monospace; /* Estilo telemetría */
+    text-shadow: 0 0 8px rgba(0, 255, 195, 0.4);
+}
+
+/* Estilo para la CUENTA REGRESIVA (Más resaltado) */
+.value-remaining {
+    color: #ffffff !important;
+    font-weight: 900;
+    letter-spacing: 1px;
+    text-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
+}
+
+/* Mini barra de progreso sutil debajo del tiempo de misión */
+.progress-mini-bar {
+    width: 100%;
+    height: 2px;
+    background: rgba(255,255,255,0.1);
+    margin-top: 5px;
+    border-radius: 2px;
+    overflow: hidden;
+}
+
+#fill-bar {
+    height: 100%;
+    width: 0%; /* Se actualiza con JS */
+    background: var(--accent-color);
+    box-shadow: 0 0 5px var(--accent-color);
+    transition: width 1s linear;
+}

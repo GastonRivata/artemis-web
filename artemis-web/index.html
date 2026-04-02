@@ -3,301 +3,247 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ISS Mission HUD - 3D Edition</title>
+    <title>Artemis II Mission HUD</title>
     <style>
         :root {
             --glow-color: rgba(0, 170, 255, 0.4);
             --accent-color: #00ffc3;
+            --warning-red: #ff4444;
         }
 
         body {
             margin: 0;
             background: radial-gradient(circle at center, #0b0f1a, #000);
             color: white;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-family: 'Segoe UI', sans-serif;
             overflow: hidden;
-            height: 100dvh;
-            /* Perspectiva global para elementos 3D */
-            perspective: 1200px;
+            height: 100vh;
         }
 
-        /* FONTO DE ESTRELLAS PARALLAX */
-        .stars-container {
-            position: fixed;
-            width: 100%;
-            height: 100%;
-            z-index: 0;
-        }
-
+        /* ESTRELLAS */
+        .stars-container { position: fixed; width: 100%; height: 100%; z-index: 0; }
         .stars {
             position: absolute;
             background: url("https://www.transparenttextures.com/patterns/stardust.png");
-            width: 200%;
-            height: 200%;
-            top: -50%;
-            left: -50%;
-            opacity: 0.4;
+            width: 200%; height: 200%; top: -50%; left: -50%; opacity: 0.4;
         }
-
         .layer1 { animation: moveStars 150s linear infinite; }
-        .layer2 { 
-            animation: moveStars 80s linear infinite reverse; 
-            opacity: 0.2; 
-            transform: scale(1.5);
-        }
+        @keyframes moveStars { from { transform: translate(0, 0); } to { transform: translate(100px, 100px); } }
 
-        @keyframes moveStars {
-            from { transform: translate(0, 0); }
-            to { transform: translate(100px, 100px); }
-        }
-
-        /* ESCENA PRINCIPAL 3D */
+        /* ESCENA Y PLANETAS */
         .scene {
             position: relative;
             width: 100vw;
             height: 100vh;
+            perspective: 1200px;
             transform-style: preserve-3d;
-            /* Inclinamos un poco la cámara para el efecto 3D */
-            transform: rotateX(20deg);
             z-index: 1;
         }
 
-        /* PLANETAS CON ILUMINACIÓN 3D */
-        .planet {
-            position: absolute;
-            border-radius: 50%;
-            background-size: cover;
-            background-position: center;
-            transform-style: preserve-3d;
-        }
+        .planet { position: absolute; border-radius: 50%; background-size: cover; top: 50%; }
 
         .earth {
-            width: 200px;
-            height: 200px;
-            top: 45%;
-            left: 30%;
-            transform: translate(-50%, -50%) translateZ(50px);
+            width: 180px; height: 180px;
+            left: 20%;
+            transform: translate(-50%, -50%);
             background-image: url("https://upload.wikimedia.org/wikipedia/commons/9/97/The_Earth_seen_from_Apollo_17.jpg");
-            /* Sombra interna para efecto esfera */
-            box-shadow: inset -20px -20px 50px rgba(0,0,0,0.9), 
-                        0 0 40px rgba(0,150,255,0.4);
+            box-shadow: inset -20px -20px 50px rgba(0,0,0,0.9), 0 0 40px rgba(0,150,255,0.4);
+            z-index: 10;
         }
 
         .moon {
-            width: 80px;
-            height: 80px;
-            top: 40%;
-            left: 80%;
-            transform: translate(-50%, -50%) translateZ(-100px);
+            width: 60px; height: 60px;
+            left: 85%;
+            transform: translate(-50%, -50%);
             background-image: url("https://upload.wikimedia.org/wikipedia/commons/e/e1/FullMoon2010.jpg");
-            box-shadow: inset -10px -10px 30px rgba(0,0,0,0.8), 
-                        0 0 20px rgba(255,255,255,0.2);
+            box-shadow: inset -10px -10px 30px rgba(0,0,0,0.8), 0 0 20px rgba(255,255,255,0.2);
+            z-index: 5;
         }
 
-        /* ÓRBITA ELÍPTICA */
         .orbit {
             position: absolute;
-            width: 500px;
-            height: 250px;
-            border: 1px dashed rgba(255,255,255,0.15);
+            width: 65%; height: 30%;
+            top: 50%; left: 52.5%;
+            border: 2px dashed rgba(255, 255, 255, 0.15);
             border-radius: 50%;
-            top: 45%;
-            left: 30%;
             transform: translate(-50%, -50%) rotateX(75deg);
             pointer-events: none;
+            z-index: 1;
         }
 
         /* COHETE */
         .rocket {
             position: absolute;
-            width: 40px;
-            height: 80px;
-            transform-style: preserve-3d;
-            z-index: 10;
+            width: 35px; height: 70px;
+            z-index: 20;
+            transition: transform 0.3s ease-out;
         }
-
-        .rocket-wrapper {
-            transform-style: preserve-3d;
-            animation: rocketFloat 2s ease-in-out infinite;
-        }
-
-        @keyframes rocketFloat {
-            0%, 100% { transform: translateY(0) rotateZ(0deg); }
-            50% { transform: translateY(-10px) rotateZ(2deg); }
-        }
-
-        /* FLAMA DINÁMICA */
         .flame {
-            position: absolute;
-            bottom: -15px;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 15px;
-            height: 40px;
+            position: absolute; bottom: -15px; left: 50%; transform: translateX(-50%);
+            width: 15px; height: 35px;
             background: radial-gradient(ellipse at top, #fff, #ff9800, transparent);
-            filter: blur(4px);
-            animation: burn 0.1s infinite alternate;
+            filter: blur(3px); animation: burn 0.1s infinite alternate;
         }
+        @keyframes burn { from { transform: translateX(-50%) scaleY(1); } to { transform: translateX(-50%) scaleY(1.4); } }
 
-        @keyframes burn {
-            from { transform: translateX(-50%) scaleY(1); opacity: 0.9; }
-            to { transform: translateX(-50%) scaleY(1.4); opacity: 0.6; }
-        }
-
-        /* HUD FUTURISTA */
+        /* HUD */
         .hud {
-            position: fixed;
-            bottom: 30px;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 90%;
-            max-width: 900px;
-            background: rgba(0, 10, 20, 0.7);
+            position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%);
+            width: 90%; max-width: 950px;
+            background: rgba(0, 10, 20, 0.8);
             border: 1px solid var(--glow-color);
-            border-radius: 20px;
-            backdrop-filter: blur(15px);
-            display: flex;
-            justify-content: space-around;
-            align-items: center;
-            padding: 20px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-            z-index: 100;
+            border-radius: 15px; backdrop-filter: blur(10px);
+            display: flex; justify-content: space-around; align-items: center;
+            padding: 15px; z-index: 100;
         }
 
-        .hud-item {
-            text-align: center;
-            flex: 1;
-        }
+        .hud-item { text-align: center; flex: 1; border-right: 1px solid rgba(255,255,255,0.1); }
+        .hud-item:last-child { border: none; }
 
-        .hud-title {
-            font-size: 10px;
-            text-transform: uppercase;
-            letter-spacing: 2px;
-            color: #88a;
-            margin-bottom: 5px;
-        }
+        .hud-title { font-size: 9px; text-transform: uppercase; letter-spacing: 1px; color: #88a; }
+        .value { display: block; font-size: 1.1rem; font-weight: bold; margin-top: 5px; }
 
-        .value {
-            display: block;
-            font-size: 1.2rem;
-            font-weight: bold;
-            color: var(--accent-color);
-            text-shadow: 0 0 10px rgba(0, 255, 195, 0.5);
+        /* ESTILOS ESPECÍFICOS */
+        .live {
+            color: var(--warning-red); animation: blinker 1.5s linear infinite;
+            display: flex; align-items: center; justify-content: center; gap: 5px; font-size: 0.8rem;
         }
+        .live::before { content: ""; width: 8px; height: 8px; background: var(--warning-red); border-radius: 50%; }
+
+        @keyframes blinker { 50% { opacity: 0.2; } }
+
+        #mission-time { color: var(--accent-color); font-family: monospace; }
+        #mission-countdown { color: #ffffff; text-shadow: 0 0 10px rgba(255,255,255,0.5); }
 
         #artemis-title {
-            font-weight: 900;
-            border-left: 2px solid var(--accent-color);
-            padding-left: 15px;
-            margin-left: 10px;
-            font-style: italic;
+            font-weight: 800; font-style: italic; color: var(--accent-color);
+            text-transform: uppercase; border-left: 2px solid #fff;
+            padding-left: 15px; margin-left: 10px; flex: 0.8;
+            animation: titlePulse 4s infinite ease-in-out;
         }
-
-        @media (max-width: 768px) {
-            .hud { flex-direction: row; flex-wrap: wrap; font-size: 12px; }
-            .hud-item { min-width: 33%; margin-bottom: 10px; }
-            .earth { width: 150px; height: 150px; }
-        }
+        @keyframes titlePulse { 50% { filter: brightness(1.3); } }
     </style>
 </head>
 <body>
 
-    <div class="stars-container">
-        <div class="stars layer1"></div>
-        <div class="stars layer2"></div>
-    </div>
+    <div class="stars-container"><div class="stars layer1"></div></div>
 
     <div class="scene">
         <div class="earth planet"></div>
         <div class="moon planet"></div>
         <div class="orbit"></div>
-
         <div id="rocket" class="rocket">
-            <div class="rocket-wrapper">
-                <svg viewBox="0 0 40 100">
-                    <path d="M20 5 L35 80 L20 70 L5 80 Z" fill="#eee" stroke="#999" stroke-width="1"/>
-                    <circle cx="20" cy="40" r="4" fill="#4fc3f7" />
-                    <rect x="15" y="70" width="10" height="5" fill="#555" />
-                </svg>
-                <div class="flame"></div>
-            </div>
+            <svg viewBox="0 0 40 100">
+                <path d="M20 5 L35 80 L20 70 L5 80 Z" fill="#eee" />
+                <circle cx="20" cy="40" r="4" fill="#4fc3f7" />
+            </svg>
+            <div class="flame"></div>
         </div>
     </div>
 
     <div class="hud">
         <div class="hud-item">
             <span class="hud-title">Status</span>
-            <span class="value" style="color: #ff4444; font-size: 0.8rem;">● LIVE</span>
+            <span class="live">LIVE ISS DATA</span>
         </div>
         <div class="hud-item">
-            <span class="hud-title">Altitud</span>
-            <span id="altitude" class="value">--</span>
+            <span class="hud-title">Misión Transcurrido</span>
+            <span id="mission-time" class="value">00d 00h 00m</span>
         </div>
         <div class="hud-item">
-            <span class="hud-title">Velocidad</span>
-            <span id="speed" class="value">--</span>
-        </div>
+    <span class="hud-title">Telemetría Orbital</span>
+    <div style="display: flex; flex-direction: column; gap: 2px; margin-top: 5px;">
+        <span class="value" style="font-size: 0.9rem;">
+            <small style="color: #88a; font-size: 0.6rem; letter-spacing: 1px;">LAT:</small> 
+            <span id="latitude">--°</span>
+        </span>
+        <span class="value" style="font-size: 0.9rem; color: var(--accent-color);">
+            <small style="color: #88a; font-size: 0.6rem; letter-spacing: 1px;">VEL:</small> 
+            <span id="speed">-- km/h</span>
+        </span>
+    </div>
+</div>
         <div class="hud-item">
-            <span class="hud-title">Tiempo Misión</span>
-            <span id="time" class="value">--</span>
+            <span class="hud-title">Fin de Misión</span>
+            <span id="mission-countdown" class="value">--d --h --m</span>
         </div>
-        <div id="artemis-title">ARTEMIS II</div>
+        <div id="artemis-title">Artemis <span style="opacity: 0.6;">II</span></div>
     </div>
 
     <script>
-        const launchTime = new Date(Date.UTC(2026, 3, 2, 22, 24, 0));
-        let angle = 0;
+        const launchDate = new Date(2026, 3, 1, 19, 24, 0); 
+        const endDate = new Date(launchDate.getTime() + (10 * 24 * 60 * 60 * 1000));
+        let progress = 0;
 
-        async function updateISS() {
-            try {
-                const res = await fetch("https://api.wheretheiss.at/v1/satellites/25544");
-                const data = await res.json();
-                
-                document.getElementById("altitude").innerText = Math.round(data.altitude) + " km";
-                document.getElementById("speed").innerText = Math.round(data.velocity) + " km/h";
-                
-                // Usamos la longitud para mover el cohete en la órbita
-                angle = (data.longitude * Math.PI) / 180;
-            } catch (e) { console.error("Error API", e); }
+        async function getISSData() {
+    try {
+        const res = await fetch("https://api.wheretheiss.at/v1/satellites/25544");
+        const data = await res.json();
+        
+        // Actualizamos Latitud (con 2 decimales y símbolo de grado)
+        document.getElementById("latitude").innerText = data.latitude.toFixed(2) + "°";
+        
+        // Actualizamos Velocidad (con separador de miles opcional)
+        document.getElementById("speed").innerText = Math.round(data.velocity).toLocaleString() + " km/h";
+        
+        // El progreso sigue moviendo el cohete
+        progress = (data.longitude + 180) / 360; 
+    } catch (err) { 
+        console.error("Error en telemetría:", err); 
+    }
+}
+
+        function updateTimers() {
+            const now = new Date();
+            
+            // Tiempo Transcurrido
+            let diff = Math.max(0, now - launchDate);
+            const dE = Math.floor(diff / 86400000);
+            const hE = Math.floor((diff % 86400000) / 3600000);
+            const mE = Math.floor((diff % 3600000) / 60000);
+            const sE = Math.floor((diff % 60000) / 1000);
+            document.getElementById("mission-time").innerText = `${dE}d ${hE}h ${mE}m ${sE}s`;
+
+            // Tiempo Restante
+            let left = endDate - now;
+            if (left <= 0) {
+                document.getElementById("mission-countdown").innerText = "COMPLETADA";
+            } else {
+                const dR = Math.floor(left / 86400000);
+                const hR = Math.floor((left % 86400000) / 3600000);
+                const mR = Math.floor((left % 3600000) / 60000);
+                document.getElementById("mission-countdown").innerText = `${dR}d ${hR}h ${mR}m`;
+            }
         }
 
         function animate() {
             const rocket = document.getElementById("rocket");
-            
-            // Cálculos para órbita elíptica 3D
-            const rx = 250; // radio X
-            const ry = 125; // radio Y (por la inclinación)
-            
-            const centerX = window.innerWidth * 0.3;
-            const centerY = window.innerHeight * 0.45;
+            const startX = window.innerWidth * 0.20;
+            const endX = window.innerWidth * 0.85;
+            const centerX = (startX + endX) / 2;
+            const centerY = window.innerHeight * 0.5;
+            const rx = (endX - startX) / 2;
+            const ry = window.innerHeight * 0.15;
 
+            const angle = Math.PI * (1 - progress); 
             const x = centerX + rx * Math.cos(angle);
             const y = centerY + ry * Math.sin(angle);
             
-            // Efecto de profundidad: el cohete se achica cuando está "atrás" (y < centerY)
-            const zIndex = y > centerY ? 20 : 5;
-            const scale = 0.5 + (y / window.innerHeight);
+            const dx = -rx * Math.sin(angle);
+            const dy = ry * Math.cos(angle);
+            const rotation = Math.atan2(dy, dx);
 
             rocket.style.left = `${x}px`;
             rocket.style.top = `${y}px`;
-            rocket.style.zIndex = zIndex;
-            rocket.style.transform = `translate(-50%, -50%) scale(${scale}) rotate(${angle + Math.PI/2}rad)`;
-
+            rocket.style.transform = `translate(-50%, -50%) scale(${0.7 + (progress * 0.3)}) rotate(${rotation + Math.PI/2}rad)`;
+            
             requestAnimationFrame(animate);
         }
 
-        function updateClock() {
-            const now = new Date();
-            const diff = Math.max(0, Math.floor((now - launchTime) / 1000));
-            const h = Math.floor(diff / 3600);
-            const m = Math.floor((diff % 3600) / 60);
-            const s = diff % 60;
-            document.getElementById("time").innerText = `${h}h ${m}m ${s}s`;
-        }
-
-        setInterval(updateISS, 3000);
-        setInterval(updateClock, 1000);
-        updateISS();
+        setInterval(getISSData, 3000);
+        setInterval(updateTimers, 1000);
+        getISSData();
+        updateTimers();
         animate();
     </script>
 </body>
