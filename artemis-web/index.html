@@ -5,205 +5,53 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Artemis II Live</title>
 
-<style>
-body {
-  margin: 0;
-  background: radial-gradient(circle at center, #0b0f1a, #000);
-  color: white;
-  font-family: 'Segoe UI', sans-serif;
-  overflow: hidden;
-}
-
-.container {
-  position: relative;
-  height: 100dvh;
-  width: 100%;
-}
-
-/* estrellas */
-.stars {
-  position: absolute;
-  width: 200%;
-  height: 100%;
-  background: url("https://www.transparenttextures.com/patterns/stardust.png");
-  opacity: 0.25;
-}
-
-.layer1 { animation: moveStars 60s linear infinite; }
-.layer2 { animation: moveStars 120s linear infinite; opacity: 0.4; }
-
-@keyframes moveStars {
-  from { transform: translateX(0); }
-  to { transform: translateX(-50%); }
-}
-
-/* planetas */
-.earth, .moon {
-  position: absolute;
-  bottom: 15%;
-  width: 8vw;
-  height: 8vw;
-  min-width: 40px;
-  min-height: 40px;
-  max-width: 80px;
-  max-height: 80px;
-  border-radius: 50%;
-}
-
-.earth {
-  left: 5%;
-  background: radial-gradient(circle, #3fa9f5, #1b4d89);
-  box-shadow: 0 0 25px #3fa9f5;
-}
-
-.moon {
-  right: 5%;
-  background: radial-gradient(circle, #ccc, #888);
-  box-shadow: 0 0 15px #aaa;
-}
-
-/* trayectoria */
-.path {
-  position: absolute;
-  bottom: calc(15% + 4vw);
-  left: 10%;
-  right: 10%;
-  height: 2px;
-  background: rgba(255,255,255,0.2);
-}
-
-/* COHETE (FIX IMPORTANTE) */
-.rocket {
-  position: absolute;
-  bottom: calc(15% + 4vw);
-  left: 10%;
-  transform: translate(-50%, 50%);
-  transition: left 1s linear;
-}
-
-/* tamaño responsive */
-.rocket-wrapper {
-  width: 6vw;
-  max-width: 40px;
-  min-width: 25px;
-}
-
-/* svg */
-.rocket-svg {
-  width: 100%;
-  filter: drop-shadow(0 0 10px white);
-}
-
-/* fuego */
-.flame {
-  position: absolute;
-  bottom: -20px;
-  left: 50%;
-  transform: translateX(-50%);
-}
-
-.flame-inner {
-  width: 6px;
-  height: 20px;
-  background: radial-gradient(circle, #fff, #ff9800);
-  border-radius: 50%;
-  filter: blur(3px);
-  animation: flameInner 0.08s infinite alternate;
-}
-
-.flame-outer {
-  position: absolute;
-  top: 5px;
-  left: -5px;
-  width: 16px;
-  height: 30px;
-  background: radial-gradient(circle, orange, red, transparent);
-  border-radius: 50%;
-  filter: blur(8px);
-  opacity: 0.7;
-  animation: flameOuter 0.12s infinite alternate;
-}
-
-@keyframes flameInner {
-  from { transform: scaleY(1); }
-  to { transform: scaleY(1.6); }
-}
-
-@keyframes flameOuter {
-  from { transform: scaleY(1); opacity: 0.6; }
-  to { transform: scaleY(1.8); opacity: 0.3; }
-}
-
-/* info */
-.info {
-  position: absolute;
-  bottom: 5%;
-  width: 100%;
-  text-align: center;
-}
-
-#distance {
-  font-size: clamp(24px, 5vw, 40px);
-  font-weight: bold;
-}
-
-#percent, #time, #speed {
-  opacity: 0.7;
-  margin-top: 5px;
-  font-size: clamp(12px, 3vw, 16px);
-}
-
-/* mobile ajustes */
-@media (max-width: 600px) {
-  .earth, .moon {
-    bottom: 18%;
-  }
-
-  .path {
-    bottom: calc(18% + 20px);
-  }
-
-  .rocket {
-    bottom: calc(18% + 20px);
-  }
-}
-</style>
+<link rel="stylesheet" href="css/styles.css">
 </head>
 
 <body>
 
 <div class="container">
 
+  <!-- fondo -->
   <div class="stars layer1"></div>
   <div class="stars layer2"></div>
 
-  <div class="earth"></div>
-  <div class="moon"></div>
-  <div class="path"></div>
+  <!-- escena -->
+  <div class="scene">
 
-  <!-- 🚀 COHETE -->
-  <div id="rocket" class="rocket">
-    <div class="rocket-wrapper">
+    <div class="earth"></div>
+    <div class="moon"></div>
 
-      <svg class="rocket-svg" viewBox="0 0 40 100">
-        <rect x="10" y="20" width="20" height="60" rx="10" fill="url(#metal)" />
-        <polygon points="20,0 30,20 10,20" fill="#ddd"/>
-        <circle cx="20" cy="40" r="5" fill="#4fc3f7"/>
-        <polygon points="10,70 0,90 10,85" fill="#999"/>
-        <polygon points="30,70 40,90 30,85" fill="#999"/>
+    <div class="track">
+      <div class="path"></div>
 
-        <defs>
-          <linearGradient id="metal" x1="0" x2="1">
-            <stop offset="0%" stop-color="#ffffff"/>
-            <stop offset="50%" stop-color="#bbbbbb"/>
-            <stop offset="100%" stop-color="#eeeeee"/>
-          </linearGradient>
-        </defs>
-      </svg>
+      <!-- 🚀 COHETE -->
+      <div id="rocket" class="rocket">
+        <div class="rocket-wrapper">
 
-      <div class="flame">
-        <div class="flame-inner"></div>
-        <div class="flame-outer"></div>
+          <svg viewBox="0 0 40 100">
+            <rect x="10" y="20" width="20" height="60" rx="10" fill="url(#metal)" />
+            <polygon points="20,0 30,20 10,20" fill="#ddd"/>
+            <circle cx="20" cy="40" r="5" fill="#4fc3f7"/>
+            <polygon points="10,70 0,90 10,85" fill="#999"/>
+            <polygon points="30,70 40,90 30,85" fill="#999"/>
+
+            <defs>
+              <linearGradient id="metal" x1="0" x2="1">
+                <stop offset="0%" stop-color="#ffffff"/>
+                <stop offset="50%" stop-color="#bbbbbb"/>
+                <stop offset="100%" stop-color="#eeeeee"/>
+              </linearGradient>
+            </defs>
+          </svg>
+
+          <!-- 🔥 fuego -->
+          <div class="flame">
+            <div class="flame-inner"></div>
+            <div class="flame-outer"></div>
+          </div>
+
+        </div>
       </div>
 
     </div>
@@ -219,9 +67,8 @@ body {
 
 </div>
 
-<!-- sonido -->
 <audio id="spaceSound" loop>
-  <source src="https://cdn.pixabay.com/audio/2022/03/15/audio_115b9b4c9c.mp3" type="audio/mpeg">
+  <source src="https://cdn.pixabay.com/audio/2022/03/15/audio_115b9b4c9c.mp3">
 </audio>
 
 <script>
@@ -248,9 +95,10 @@ function updateSpeed(distance) {
 }
 
 function animateRocket(progress) {
-  const start = window.innerWidth * 0.1;
-  const end = window.innerWidth * 0.9;
-  const pos = start + (end - start) * progress;
+  const track = document.querySelector(".track");
+  const width = track.offsetWidth;
+
+  const pos = progress * width;
   document.getElementById("rocket").style.left = pos + "px";
 }
 

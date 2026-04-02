@@ -1,0 +1,171 @@
+body {
+  margin: 0;
+  background: radial-gradient(circle at center, #0b0f1a, #000);
+  color: white;
+  font-family: 'Segoe UI', sans-serif;
+  overflow-x: hidden; /* 👈 FIX */
+}
+
+/* contenedor */
+.container {
+  position: relative;
+  width: 100%;
+  min-height: 100vh; /* 👈 FIX clave */
+}
+
+/* estrellas */
+.stars {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  background: url("https://www.transparenttextures.com/patterns/stardust.png");
+  opacity: 0.3;
+}
+
+.layer1 { animation: moveStars 80s linear infinite; }
+.layer2 { animation: moveStars 140s linear infinite; opacity: 0.5; }
+
+@keyframes moveStars {
+  from { transform: translateX(0); }
+  to { transform: translateX(-1000px); }
+}
+
+/* 🚀 ESCENA (FIX IMPORTANTE) */
+.scene {
+  position: absolute;
+  bottom: 20%;
+  width: 100%;
+  height: 120px;
+}
+
+/* planetas */
+.earth, .moon {
+  position: absolute;
+  bottom: 0;
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+}
+
+.earth {
+  left: 5%;
+  background: radial-gradient(circle, #3fa9f5, #1b4d89);
+  box-shadow: 0 0 20px #3fa9f5;
+}
+
+.moon {
+  right: 5%;
+  background: radial-gradient(circle, #ccc, #888);
+  box-shadow: 0 0 15px #aaa;
+}
+
+/* pista */
+.track {
+  position: absolute;
+  left: 10%;
+  right: 10%;
+  bottom: 25px; /* 👈 alineado con planetas */
+  height: 2px;
+}
+
+.path {
+  width: 100%;
+  height: 2px;
+  background: rgba(255,255,255,0.2);
+}
+
+/* cohete */
+.rocket {
+  position: absolute;
+  bottom: 25px; /* 👈 mismo nivel que la línea */
+  transform: translateX(-50%);
+  transition: left 1s linear;
+}
+
+.rocket-wrapper {
+  width: 35px;
+}
+
+.rocket svg {
+  width: 100%;
+}
+
+/* fuego */
+.flame {
+  position: absolute;
+  bottom: -20px;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.flame-inner {
+  width: 8px;
+  height: 20px;
+  background: radial-gradient(circle, #fff, #ff9800);
+  border-radius: 50%;
+  filter: blur(2px);
+  animation: flameInner 0.08s infinite alternate;
+}
+
+.flame-outer {
+  position: absolute;
+  top: 5px;
+  left: -5px;
+  width: 18px;
+  height: 30px;
+  background: radial-gradient(circle, orange, red, transparent);
+  border-radius: 50%;
+  filter: blur(6px);
+  opacity: 0.7;
+  animation: flameOuter 0.12s infinite alternate;
+}
+
+@keyframes flameInner {
+  from { transform: scaleY(1); }
+  to { transform: scaleY(1.5); }
+}
+
+@keyframes flameOuter {
+  from { transform: scaleY(1); }
+  to { transform: scaleY(1.7); }
+}
+
+/* info */
+.info {
+  position: absolute;
+  bottom: 5%;
+  width: 100%;
+  text-align: center;
+}
+
+#distance {
+  font-size: 32px;
+  font-weight: bold;
+}
+
+#percent, #time, #speed {
+  opacity: 0.7;
+  font-size: 14px;
+}
+
+/* 📱 MOBILE FIX REAL */
+@media (max-width: 600px) {
+
+  .scene {
+    bottom: 30%;
+  }
+
+  .earth, .moon {
+    width: 35px;
+    height: 35px;
+  }
+
+  .rocket-wrapper {
+    width: 28px;
+  }
+
+  #distance {
+    font-size: 22px;
+  }
+
+}
