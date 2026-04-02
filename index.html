@@ -1,0 +1,71 @@
+﻿<!DOCTYPE html>
+<meta property="og:title" content="Artemis II en tiempo real">
+<meta property="og:description" content="Mirá qué tan lejos está ahora">
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Artemis II Live</title>
+
+    <style>
+        body {
+            margin: 0;
+            background: black;
+            color: white;
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            flex-direction: column;
+        }
+
+        #distance {
+            font-size: 80px;
+            font-weight: bold;
+        }
+
+        #label {
+            margin-top: 10px;
+            opacity: 0.7;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="distance">...</div>
+    <div id="label">Distancia desde la Tierra</div>
+
+    <script>
+        async function update() {
+            try {
+                const res = await fetch("/api/artemis/distance");
+                const data = await res.json();
+
+                let current = 0;
+
+                function animate(target) {
+                    const step = (target - current) * 0.2;
+                    current += step;
+
+                    document.getElementById("distance").innerText =
+                        Math.floor(current).toLocaleString() + " km";
+                }
+
+                async function update() {
+                    const res = await fetch("/api/artemis/distance");
+                    const data = await res.json();
+
+                    animate(data.distance);
+                }
+
+                setInterval(update, 2000);
+            } catch (e) {
+                document.getElementById("distance").innerText = "Error";
+            }
+        }
+
+        setInterval(update, 2000);
+        update();
+    </script>
+</body>
+</html>
