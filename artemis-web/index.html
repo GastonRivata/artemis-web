@@ -3,18 +3,24 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <title>Artemis II Live Mission Tracker | Telemetría Orion en Tiempo Real</title>
+    <meta name="description" content="Seguí la trayectoria de la cápsula Orion hacia la Luna. Telemetría orbital, velocidad y posición de la misión Artemis II en vivo.">
+
     <meta property="og:type" content="website">
     <meta property="og:url" content="https://howfarartemis.com/">
-    <meta property="og:title" content="Artemis II - Misión en Tiempo Real">
-    <meta property="og:description" content="Seguí la trayectoria de la cápsula Orion hacia la Luna con telemetría en vivo.">
-    <meta property="og:image" content="https://howfarartemis.com/assets/preview-image.jpg">
+    <meta property="og:title" content="Artemis II Live Tracker: Seguí la Misión a la Luna en Vivo">
+    <meta property="og:description" content="Explorá la telemetría orbital de la cápsula Orion. Datos en tiempo real de velocidad, latitud y cronograma de la misión Artemis II de la NASA.">
+    <meta property="og:image" content="https://www.nasa.gov/wp-content/uploads/2023/03/artemis-ii-f-h-01.jpg">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
 
     <meta property="twitter:card" content="summary_large_image">
     <meta property="twitter:url" content="https://howfarartemis.com/">
-    <meta property="twitter:title" content="Artemis II - Misión en Tiempo Real">
-    <meta property="twitter:description" content="Telemetría orbital y estado de la misión Artemis II en vivo.">
-    <meta property="twitter:image" content="https://howfarartemis.com/assets/preview-image.jpg">
-    <title>Artemis II Mission HUD</title>
+    <meta property="twitter:title" content="Artemis II Live Tracker: Misión Orion en Tiempo Real">
+    <meta property="twitter:description" content="Datos en vivo de la misión Artemis II. Telemetría, posición orbital y cuenta regresiva para el retorno a la Tierra.">
+    <meta property="twitter:image" content="https://www.nasa.gov/wp-content/uploads/2023/03/artemis-ii-f-h-01.jpg">
+
     <style>
         :root {
             --glow-color: rgba(0, 170, 255, 0.4);
@@ -31,13 +37,12 @@
             overflow: hidden;
             height: 100vh;
             display: flex;
-            flex-direction: column; /* Separa la escena del HUD verticalmente */
+            flex-direction: column;
         }
 
-        /* CONTENEDOR DEL ESPACIO */
         .viewport {
             position: relative;
-            flex: 1; /* Ocupa todo el espacio sobrante arriba del HUD */
+            flex: 1;
             overflow: hidden;
             background: radial-gradient(circle at center, #0b0f1a, #000);
         }
@@ -51,7 +56,6 @@
         .layer1 { animation: moveStars 150s linear infinite; }
         @keyframes moveStars { from { transform: translate(0, 0); } to { transform: translate(100px, 100px); } }
 
-        /* ESCENA Y ELEMENTOS */
         .scene {
             position: relative;
             width: 100%;
@@ -102,7 +106,6 @@
         }
         @keyframes burn { from { scale: 1; } to { scale: 1.3; } }
 
-        /* PANEL HUD (ESTILO CONSOLA) */
         .hud {
             height: auto;
             background: var(--panel-bg);
@@ -154,7 +157,6 @@
         .live-tag::before { content: ""; width: 7px; height: 7px; background: var(--warning-red); border-radius: 50%; }
         @keyframes blink { 50% { opacity: 0.3; } }
 
-        /* MOBILE OPTIMIZATION */
         @media (max-width: 768px) {
             .hud { padding: 15px 10px; }
             .hud-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
@@ -254,6 +256,7 @@
         function animate() {
             const rocket = document.getElementById("rocket");
             const viewport = document.querySelector('.viewport');
+            if(!viewport) return;
             const w = viewport.clientWidth;
             const h = viewport.clientHeight;
 
