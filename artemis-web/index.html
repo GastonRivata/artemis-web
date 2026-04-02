@@ -3,126 +3,352 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Artemis II Live</title>
+<title>ISS Mission HUD</title>
 
-<link rel="stylesheet" href="css/styles.css">
+<style>
+/* BODY */
+body {
+  margin: 0;
+  background: radial-gradient(circle at center, #0b0f1a, #000);
+  color: #e0f7ff;
+  font-family: 'Segoe UI', sans-serif;
+  overflow-x: hidden;
+  overflow-y: hidden;
+}
+
+/* ESTRELLAS */
+.stars {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  background: url("https://www.transparenttextures.com/patterns/stardust.png");
+  opacity: 0.3;
+}
+
+/* ESCENA */
+.scene {
+  position: relative;
+  width: 100vw;
+  height: 100vh;
+}
+
+/* PLANETAS REALISTAS */
+.earth, .moon {
+  position: absolute;
+  border-radius: 50%;
+  background-size: cover;
+  background-position: center;
+  box-shadow: 0 0 20px rgba(255,255,255,0.3);
+}
+
+.earth {
+  width: 140px;
+  height: 140px;
+  top: 50%;
+  left: 35%;
+  transform: translate(-50%, -50%);
+  background-image: url("https://upload.wikimedia.org/wikipedia/commons/9/97/The_Earth_seen_from_Apollo_17.jpg");
+  box-shadow: 0 0 40px rgba(0,150,255,0.6);
+}
+
+.moon {
+  width: 90px;
+  height: 90px;
+  top: 50%;
+  left: 80%;
+  transform: translate(-50%, -50%);
+  background-image: url("https://upload.wikimedia.org/wikipedia/commons/e/e1/FullMoon2010.jpg");
+  box-shadow: 0 0 20px rgba(255,255,255,0.4);
+}
+
+/* ORBITA */
+.orbit {
+  position: absolute;
+  width: 400px;
+  height: 400px;
+  border: 1px dashed rgba(255,255,255,0.2);
+  border-radius: 50%;
+  top: 50%;
+  left: 35%;
+  transform: translate(-50%, -50%);
+}
+
+/* COHETE */
+.rocket {
+  position: absolute;
+  width: 40px;
+  transform-origin: center center;
+}
+
+.flame {
+  position: absolute;
+  bottom: -20px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 10px;
+  height: 30px;
+}
+
+.flame-inner {
+  width: 8px;
+  height: 20px;
+  background: radial-gradient(circle, #fff, #ff9800);
+  border-radius: 50%;
+  filter: blur(2px);
+  animation: flameInner 0.08s infinite alternate;
+}
+
+.flame-outer {
+  position: absolute;
+  top: 5px;
+  left: -5px;
+  width: 18px;
+  height: 30px;
+  background: radial-gradient(circle, orange, red, transparent);
+  border-radius: 50%;
+  filter: blur(6px);
+  opacity: 0.7;
+  animation: flameOuter 0.12s infinite alternate;
+}
+
+@keyframes flameInner {
+  from { transform: scaleY(1); opacity: 0.8; }
+  to { transform: scaleY(1.5); opacity: 0.4; }
+}
+
+@keyframes flameOuter {
+  from { transform: scaleY(1); opacity: 0.8; }
+  to { transform: scaleY(1.5); opacity: 0.4; }
+}
+
+/* HUD MEJORADO */
+.hud {
+  position: absolute;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 90%;
+  max-width: 850px;
+  padding: 15px 20px;
+  background: rgba(0,0,0,0.45);
+  border: 1px solid rgba(0,255,255,0.2);
+  border-radius: 14px;
+  backdrop-filter: blur(12px);
+  display: flex;
+  justify-content: space-around;
+  flex-wrap: wrap;
+  gap: 12px;
+  box-shadow: 0 0 20px rgba(0,255,255,0.15);
+  font-size: 14px;
+}
+
+.hud-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-width: 80px;
+  padding: 8px 12px;
+  background: rgba(255,255,255,0.05);
+  border-radius: 8px;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.hud-item:hover {
+  transform: scale(1.08);
+  box-shadow: 0 0 10px rgba(0,255,192,0.5);
+}
+
+.hud-icon {
+  font-size: 18px;
+}
+
+.hud-title {
+  font-size: 12px;
+  color: #e0f7ff;
+  margin-bottom: 2px;
+}
+
+.value {
+  color: #00ffc3;
+  font-weight: 700;
+  font-size: 16px;
+  animation: valuePulse 2s infinite;
+}
+
+.live {
+  color: #00ff9c;
+  font-weight: bold;
+  font-size: 14px;
+  animation: pulse 1.5s infinite;
+}
+
+@keyframes pulse {
+  0%,100% { opacity: 0.6; }
+  50% { opacity: 1; }
+}
+
+@keyframes valuePulse {
+  0%,100% { opacity: 0.85; }
+  50% { opacity: 1; }
+}
+
+/* MOBILE */
+@media (max-width: 600px) {
+  .hud {
+    width: 95%;
+    font-size: 12px;
+    padding: 12px 15px;
+  }
+  .hud-item {
+    min-width: 65px;
+    padding: 6px 8px;
+  }
+  .value { font-size: 14px; }
+  .hud-icon { font-size: 16px; }
+}
+
+</style>
 </head>
 
 <body>
 
-<div class="container">
+<div class="stars"></div>
 
-  <!-- fondo -->
-  <div class="stars layer1"></div>
-  <div class="stars layer2"></div>
+<div class="scene">
 
-  <!-- escena -->
-  <div class="scene">
+  <div class="earth"></div>
+  <div class="moon"></div>
+  <div class="orbit"></div>
 
-    <div class="earth"></div>
-    <div class="moon"></div>
+  <div id="rocket" class="rocket">
+    <div class="rocket-wrapper">
+      <svg viewBox="0 0 40 100">
+        <rect x="10" y="20" width="20" height="60" rx="10" fill="url(#metal)" />
+        <polygon points="20,0 30,20 10,20" fill="#ddd"/>
+        <circle cx="20" cy="40" r="5" fill="#4fc3f7"/>
+        <polygon points="10,70 0,90 10,85" fill="#999"/>
+        <polygon points="30,70 40,90 30,85" fill="#999"/>
+        <defs>
+          <linearGradient id="metal" x1="0" x2="1">
+            <stop offset="0%" stop-color="#ffffff"/>
+            <stop offset="50%" stop-color="#bbbbbb"/>
+            <stop offset="100%" stop-color="#eeeeee"/>
+          </linearGradient>
+        </defs>
+      </svg>
 
-    <div class="track">
-      <div class="path"></div>
-
-      <!-- 🚀 COHETE -->
-      <div id="rocket" class="rocket">
-        <div class="rocket-wrapper">
-
-          <svg viewBox="0 0 40 100">
-            <rect x="10" y="20" width="20" height="60" rx="10" fill="url(#metal)" />
-            <polygon points="20,0 30,20 10,20" fill="#ddd"/>
-            <circle cx="20" cy="40" r="5" fill="#4fc3f7"/>
-            <polygon points="10,70 0,90 10,85" fill="#999"/>
-            <polygon points="30,70 40,90 30,85" fill="#999"/>
-
-            <defs>
-              <linearGradient id="metal" x1="0" x2="1">
-                <stop offset="0%" stop-color="#ffffff"/>
-                <stop offset="50%" stop-color="#bbbbbb"/>
-                <stop offset="100%" stop-color="#eeeeee"/>
-              </linearGradient>
-            </defs>
-          </svg>
-
-          <!-- 🔥 fuego -->
-          <div class="flame">
-            <div class="flame-inner"></div>
-            <div class="flame-outer"></div>
-          </div>
-
-        </div>
+      <div class="flame">
+        <div class="flame-inner"></div>
+        <div class="flame-outer"></div>
       </div>
-
     </div>
   </div>
 
-  <!-- info -->
-  <div class="info">
-    <div id="distance">0 km</div>
-    <div id="percent"></div>
-    <div id="time"></div>
-    <div id="speed"></div>
+  <!-- HUD -->
+  <div class="hud">
+    <div class="hud-item">
+      <span class="hud-icon">🚀</span> <span class="live">LIVE</span>
+    </div>
+    <div class="hud-item">
+      <span class="hud-title">Altura</span>
+      <span id="altitude" class="value">--</span> km
+    </div>
+    <div class="hud-item">
+      <span class="hud-title">Distancia</span>
+      <span id="distance" class="value">--</span> km
+    </div>
+    <div class="hud-item">
+      <span class="hud-title">Velocidad</span>
+      <span id="speed" class="value">--</span> km/h
+    </div>
+    <div class="hud-item">
+      <span class="hud-title">Órbita</span>
+      <span id="orbitVal" class="value">--</span> %
+    </div>
+    <div class="hud-item">
+      <span class="hud-title">Tiempo</span>
+      <span id="time" class="value">--</span>
+    </div>
   </div>
 
 </div>
 
-<audio id="spaceSound" loop>
-  <source src="https://cdn.pixabay.com/audio/2022/03/15/audio_115b9b4c9c.mp3">
-</audio>
-
 <script>
-const TOTAL_DISTANCE = 384400;
-let startTime = Date.now();
-let current = 0;
+let angle = 0;
+let targetAngle = 0;
 
-document.body.addEventListener("click", () => {
-  document.getElementById("spaceSound").play();
-}, { once: true });
+const EARTH_RADIUS = 6371;
 
-let last = 0;
-let lastTime = Date.now();
+// Lanzamiento: 2 abril 2026, 19:24 GMT-3
+const launchTime = new Date(Date.UTC(2026,3,2,22,24,0)); 
 
-function updateSpeed(distance) {
-  const now = Date.now();
-  const speed = (distance - last) / ((now - lastTime)/1000);
+async function getISSData() {
+  try {
+    const res = await fetch("https://api.wheretheiss.at/v1/satellites/25544");
+    const data = await res.json();
 
-  document.getElementById("speed").innerText =
-    "Velocidad: " + Math.floor(speed) + " km/s";
+    const lat = data.latitude;
+    const lon = data.longitude;
+    const velocity = data.velocity;
+    const altitude = data.altitude;
 
-  last = distance;
-  lastTime = now;
+    targetAngle = (lon / 180) * Math.PI;
+
+    updateUI(lat, velocity, altitude);
+
+  } catch (err) {
+    console.error(err);
+  }
 }
 
-function animateRocket(progress) {
-  const track = document.querySelector(".track");
-  const width = track.offsetWidth;
+setInterval(getISSData, 3000);
+getISSData();
 
-  const pos = progress * width;
-  document.getElementById("rocket").style.left = pos + "px";
+function animate() {
+  angle += (targetAngle - angle) * 0.05;
+  const orbit = document.querySelector(".orbit");
+  const rect = orbit.getBoundingClientRect();
+  const cx = rect.left + rect.width / 2;
+  const cy = rect.top + rect.height / 2;
+  const r = rect.width / 2;
+  const x = cx + r * Math.cos(angle);
+  const y = cy + r * Math.sin(angle);
+  const rocket = document.getElementById("rocket");
+  rocket.style.left = x + "px";
+  rocket.style.top = y + "px";
+  rocket.style.transform =
+    `translate(-50%, -50%) rotate(${angle * 180 / Math.PI + 90}deg)`;
+  requestAnimationFrame(animate);
 }
+animate();
 
-function update() {
-  current += Math.random() * 4000;
-
+function updateUI(lat, velocity, altitude) {
+  const distanceToCenter = EARTH_RADIUS + altitude;
+  document.getElementById("altitude").innerText =
+    altitude.toFixed(0);
   document.getElementById("distance").innerText =
-    Math.floor(current).toLocaleString() + " km";
-
-  const progress = Math.min(current / TOTAL_DISTANCE, 1);
-
-  document.getElementById("percent").innerText =
-    "Progreso: " + Math.floor(progress * 100) + "%";
-
-  const elapsed = (Date.now() - startTime) / 1000;
-  document.getElementById("time").innerText =
-    "Tiempo misión: " + Math.floor(elapsed) + " s";
-
-  updateSpeed(current);
-  animateRocket(progress);
+    distanceToCenter.toFixed(0);
+  document.getElementById("speed").innerText =
+    velocity.toFixed(0);
+  document.getElementById("orbitVal").innerText =
+    Math.abs(lat).toFixed(0);
 }
 
-setInterval(update, 2000);
-update();
+function updateTime() {
+  const now = new Date();
+  let diff = Math.floor((now - launchTime) / 1000);
+  if(diff < 0) diff = 0;
+
+  const h = Math.floor(diff / 3600);
+  const m = Math.floor((diff % 3600) / 60);
+  const s = diff % 60;
+
+  document.getElementById("time").innerText =
+    `${h}h ${m}m ${s}s`;
+}
+
+updateTime();
+setInterval(updateTime, 1000);
 </script>
 
 </body>
