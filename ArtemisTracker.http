@@ -1,0 +1,6 @@
+@ArtemisTracker_HostAddress = http://localhost:5199
+
+GET {{ArtemisTracker_HostAddress}}/ArtemisController/
+Accept: application/json
+
+###

@@ -1,0 +1,49 @@
+{
+  "openapi": "3.0.4",
+  "info": {
+    "title": "ArtemisTracker",
+    "version": "1.0"
+  },
+  "paths": {
+    "/api/Artemis/distance": {
+      "get": {
+        "tags": [
+          "Artemis"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/index.html": {
+      "get": {
+        "tags": [
+          "ArtemisTracker"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": { },
+  "tags": [
+    {
+      "name": "Artemis"
+    },
+    {
+      "name": "ArtemisTracker"
+    }
+  ]
+}
