@@ -8,6 +8,9 @@ C:\Users\rivat\source\repos\ArtemisTracker\bin\Debug\net10.0\ArtemisTracker.dll
 C:\Users\rivat\source\repos\ArtemisTracker\bin\Debug\net10.0\ArtemisTracker.pdb
 C:\Users\rivat\source\repos\ArtemisTracker\bin\Debug\net10.0\Microsoft.AspNetCore.OpenApi.dll
 C:\Users\rivat\source\repos\ArtemisTracker\bin\Debug\net10.0\Microsoft.OpenApi.dll
+C:\Users\rivat\source\repos\ArtemisTracker\bin\Debug\net10.0\Swashbuckle.AspNetCore.Swagger.dll
+C:\Users\rivat\source\repos\ArtemisTracker\bin\Debug\net10.0\Swashbuckle.AspNetCore.SwaggerGen.dll
+C:\Users\rivat\source\repos\ArtemisTracker\bin\Debug\net10.0\Swashbuckle.AspNetCore.SwaggerUI.dll
 C:\Users\rivat\source\repos\ArtemisTracker\obj\Debug\net10.0\ArtemisTracker.csproj.AssemblyReference.cache
 C:\Users\rivat\source\repos\ArtemisTracker\obj\Debug\net10.0\rpswa.dswa.cache.json
 C:\Users\rivat\source\repos\ArtemisTracker\obj\Debug\net10.0\ArtemisTracker.GeneratedMSBuildEditorConfig.editorconfig
@@ -16,6 +19,7 @@ C:\Users\rivat\source\repos\ArtemisTracker\obj\Debug\net10.0\ArtemisTracker.Asse
 C:\Users\rivat\source\repos\ArtemisTracker\obj\Debug\net10.0\ArtemisTracker.csproj.CoreCompileInputs.cache
 C:\Users\rivat\source\repos\ArtemisTracker\obj\Debug\net10.0\ArtemisTracker.MvcApplicationPartsAssemblyInfo.cs
 C:\Users\rivat\source\repos\ArtemisTracker\obj\Debug\net10.0\ArtemisTracker.MvcApplicationPartsAssemblyInfo.cache
+C:\Users\rivat\source\repos\ArtemisTracker\obj\Debug\net10.0\ArtemisTracker.sourcelink.json
 C:\Users\rivat\source\repos\ArtemisTracker\obj\Debug\net10.0\rjimswa.dswa.cache.json
 C:\Users\rivat\source\repos\ArtemisTracker\obj\Debug\net10.0\rjsmrazor.dswa.cache.json
 C:\Users\rivat\source\repos\ArtemisTracker\obj\Debug\net10.0\rjsmcshtml.dswa.cache.json
@@ -25,15 +29,9 @@ C:\Users\rivat\source\repos\ArtemisTracker\obj\Debug\net10.0\staticwebassets.bui
 C:\Users\rivat\source\repos\ArtemisTracker\obj\Debug\net10.0\staticwebassets.development.json
 C:\Users\rivat\source\repos\ArtemisTracker\obj\Debug\net10.0\staticwebassets.build.endpoints.json
 C:\Users\rivat\source\repos\ArtemisTracker\obj\Debug\net10.0\swae.build.ex.cache
-C:\Users\rivat\source\repos\ArtemisTracker\obj\Debug\net10.0\staticwebassets.upToDateCheck.txt
 C:\Users\rivat\source\repos\ArtemisTracker\obj\Debug\net10.0\ArtemisT.75DC0762.Up2Date
 C:\Users\rivat\source\repos\ArtemisTracker\obj\Debug\net10.0\ArtemisTracker.dll
 C:\Users\rivat\source\repos\ArtemisTracker\obj\Debug\net10.0\refint\ArtemisTracker.dll
 C:\Users\rivat\source\repos\ArtemisTracker\obj\Debug\net10.0\ArtemisTracker.pdb
 C:\Users\rivat\source\repos\ArtemisTracker\obj\Debug\net10.0\ArtemisTracker.genruntimeconfig.cache
 C:\Users\rivat\source\repos\ArtemisTracker\obj\Debug\net10.0\ref\ArtemisTracker.dll
-C:\Users\rivat\source\repos\ArtemisTracker\bin\Debug\net10.0\Swashbuckle.AspNetCore.Swagger.dll
-C:\Users\rivat\source\repos\ArtemisTracker\bin\Debug\net10.0\Swashbuckle.AspNetCore.SwaggerGen.dll
-C:\Users\rivat\source\repos\ArtemisTracker\bin\Debug\net10.0\Swashbuckle.AspNetCore.SwaggerUI.dll
-C:\Users\rivat\source\repos\ArtemisTracker\bin\Debug\net10.0\ArtemisTracker.staticwebassets.runtime.json
-C:\Users\rivat\source\repos\ArtemisTracker\obj\Debug\net10.0\compressed\xxloiov906-{0}-omk1scnw1z-omk1scnw1z.gz

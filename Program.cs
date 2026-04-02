@@ -18,7 +18,7 @@ app.UseAuthorization();
 app.MapControllers();
 
 // 👇 esto es clave para que veas algo en /
-app.MapGet("/index.html", () => "API Artemis funcionando 🚀");
+
 app.UseDefaultFiles();
 app.UseStaticFiles();
 app.Run();
