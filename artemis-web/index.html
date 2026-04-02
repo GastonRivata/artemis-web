@@ -2,6 +2,7 @@
 <html lang="es">
 <head>
 <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Artemis II Live</title>
 
 <style>
@@ -22,26 +23,30 @@ body {
 /* estrellas */
 .stars {
   position: absolute;
-  width: 100%;
+  width: 200%;
   height: 100%;
   background: url("https://www.transparenttextures.com/patterns/stardust.png");
-  opacity: 0.3;
+  opacity: 0.25;
 }
 
 .layer1 { animation: moveStars 60s linear infinite; }
-.layer2 { animation: moveStars 120s linear infinite; opacity: 0.5; }
+.layer2 { animation: moveStars 120s linear infinite; opacity: 0.4; }
 
 @keyframes moveStars {
   from { transform: translateX(0); }
-  to { transform: translateX(-1000px); }
+  to { transform: translateX(-50%); }
 }
 
 /* planetas */
 .earth, .moon {
   position: absolute;
   bottom: 15%;
-  width: 60px;
-  height: 60px;
+  width: 8vw;
+  height: 8vw;
+  min-width: 40px;
+  min-height: 40px;
+  max-width: 80px;
+  max-height: 80px;
   border-radius: 50%;
 }
 
@@ -60,45 +65,46 @@ body {
 /* trayectoria */
 .path {
   position: absolute;
-  bottom: calc(15% + 30px);
+  bottom: calc(15% + 4vw);
   left: 10%;
   right: 10%;
   height: 2px;
   background: rgba(255,255,255,0.2);
 }
 
-/* 🚀 COHETE (FIX CLAVE) */
+/* COHETE (FIX IMPORTANTE) */
 .rocket {
   position: absolute;
-  bottom: calc(15% + 20px);
+  bottom: calc(15% + 4vw);
   left: 10%;
-  transform: translateX(-50%);
-  transition: left 0.5s linear;
+  transform: translate(-50%, 50%);
+  transition: left 1s linear;
 }
 
-/* cuerpo */
+/* tamaño responsive */
 .rocket-wrapper {
-  width: 40px;
-  height: 100px;
-  position: relative;
+  width: 6vw;
+  max-width: 40px;
+  min-width: 25px;
 }
 
+/* svg */
 .rocket-svg {
-  width: 40px;
+  width: 100%;
   filter: drop-shadow(0 0 10px white);
 }
 
-/* 🔥 fuego */
+/* fuego */
 .flame {
   position: absolute;
-  bottom: -25px;
+  bottom: -20px;
   left: 50%;
   transform: translateX(-50%);
 }
 
 .flame-inner {
-  width: 10px;
-  height: 25px;
+  width: 6px;
+  height: 20px;
   background: radial-gradient(circle, #fff, #ff9800);
   border-radius: 50%;
   filter: blur(3px);
@@ -108,9 +114,9 @@ body {
 .flame-outer {
   position: absolute;
   top: 5px;
-  left: -6px;
-  width: 22px;
-  height: 40px;
+  left: -5px;
+  width: 16px;
+  height: 30px;
   background: radial-gradient(circle, orange, red, transparent);
   border-radius: 50%;
   filter: blur(8px);
@@ -137,15 +143,30 @@ body {
 }
 
 #distance {
-  font-size: 40px;
+  font-size: clamp(24px, 5vw, 40px);
   font-weight: bold;
 }
 
 #percent, #time, #speed {
   opacity: 0.7;
   margin-top: 5px;
+  font-size: clamp(12px, 3vw, 16px);
 }
 
+/* mobile ajustes */
+@media (max-width: 600px) {
+  .earth, .moon {
+    bottom: 18%;
+  }
+
+  .path {
+    bottom: calc(18% + 20px);
+  }
+
+  .rocket {
+    bottom: calc(18% + 20px);
+  }
+}
 </style>
 </head>
 
@@ -153,7 +174,6 @@ body {
 
 <div class="container">
 
-  <div class="stars"></div>
   <div class="stars layer1"></div>
   <div class="stars layer2"></div>
 
@@ -189,8 +209,9 @@ body {
     </div>
   </div>
 
+  <!-- info -->
   <div class="info">
-    <div id="distance">...</div>
+    <div id="distance">0 km</div>
     <div id="percent"></div>
     <div id="time"></div>
     <div id="speed"></div>
@@ -198,14 +219,15 @@ body {
 
 </div>
 
+<!-- sonido -->
 <audio id="spaceSound" loop>
-  <source src="https://cdn.pixabay.com/audio/2022/03/15/audio_115b9b4c9c.mp3">
+  <source src="https://cdn.pixabay.com/audio/2022/03/15/audio_115b9b4c9c.mp3" type="audio/mpeg">
 </audio>
 
 <script>
 const TOTAL_DISTANCE = 384400;
-let current = 0;
 let startTime = Date.now();
+let current = 0;
 
 document.body.addEventListener("click", () => {
   document.getElementById("spaceSound").play();
@@ -226,33 +248,33 @@ function updateSpeed(distance) {
 }
 
 function animateRocket(progress) {
-  const rocket = document.getElementById("rocket");
   const start = window.innerWidth * 0.1;
   const end = window.innerWidth * 0.9;
   const pos = start + (end - start) * progress;
-  rocket.style.left = pos + "px";
+  document.getElementById("rocket").style.left = pos + "px";
 }
 
 function update() {
-  current += Math.random() * 3000;
-
-  const progress = Math.min(current / TOTAL_DISTANCE, 1);
+  current += Math.random() * 4000;
 
   document.getElementById("distance").innerText =
     Math.floor(current).toLocaleString() + " km";
 
+  const progress = Math.min(current / TOTAL_DISTANCE, 1);
+
   document.getElementById("percent").innerText =
-    "Progreso: " + (progress * 100).toFixed(2) + "%";
+    "Progreso: " + Math.floor(progress * 100) + "%";
 
   const elapsed = (Date.now() - startTime) / 1000;
   document.getElementById("time").innerText =
-    "Tiempo misión: " + Math.floor(elapsed) + "s";
+    "Tiempo misión: " + Math.floor(elapsed) + " s";
 
   updateSpeed(current);
   animateRocket(progress);
 }
 
-setInterval(update, 1000);
+setInterval(update, 2000);
+update();
 </script>
 
 </body>
