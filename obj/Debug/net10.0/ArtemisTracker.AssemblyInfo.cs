@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("ArtemisTracker")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+26292f5841dd30c60d56e56e625c4f83ee0a0683")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+d8ced933c31d95afd84c8cf3e802758b0e136128")]
 [assembly: System.Reflection.AssemblyProductAttribute("ArtemisTracker")]
 [assembly: System.Reflection.AssemblyTitleAttribute("ArtemisTracker")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
