@@ -2,43 +2,47 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Artemis II - Mission Control</title>
     <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@400;700&display=swap" rel="stylesheet">
     
     <style>
         :root {
-            --accent-color: #ffb400; /* Naranja Ámbar NASA */
+            --accent-color: #ffb400;
             --glow-color: rgba(255, 180, 0, 0.3);
             --warning-red: #ff3333;
-            --panel-bg: rgba(5, 5, 5, 0.9);
+            --panel-bg: rgba(5, 5, 5, 0.95);
             --terminal-font: 'Roboto Mono', monospace;
+            --hud-height: 180px; /* Altura base para escritorio */
         }
 
         body {
             margin: 0;
             background: #000;
             color: white;
-            font-family: 'Segoe UI', sans-serif;
+            font-family: 'Segoe UI', system-ui, sans-serif;
             overflow: hidden;
             height: 100vh;
             display: flex;
             flex-direction: column;
+            -webkit-font-smoothing: antialiased;
         }
 
         /* --- CAPAS DE REALISMO --- */
         .scanlines {
             position: fixed; inset: 0; z-index: 99; pointer-events: none;
-            background: linear-gradient(to bottom, transparent 50%, rgba(0,0,0,0.1) 50%);
+            background: linear-gradient(to bottom, transparent 50%, rgba(0,0,0,0.12) 50%);
             background-size: 100% 4px;
         }
 
+        /* CONTENEDOR PRINCIPAL */
         .viewport {
             position: relative;
             flex: 1;
             display: flex;
             align-items: center;
             justify-content: center;
+            overflow: hidden;
         }
 
         .main-video {
@@ -47,98 +51,143 @@
 
         .overlay-vignette {
             position: absolute; inset: 0;
-            background: radial-gradient(circle, transparent 20%, rgba(0,0,0,0.8) 100%);
+            background: radial-gradient(circle, transparent 10%, rgba(0,0,0,0.85) 100%);
             z-index: 1; pointer-events: none;
         }
 
-        /* --- BOTÓN DE INTERACCIÓN --- */
+        /* --- BOTÓN DE INTERACCIÓN (Mejorado para móvil) --- */
         #hud-toggle {
             position: absolute;
-            bottom: 30px;
+            bottom: 20px;
             left: 50%;
             transform: translateX(-50%);
             z-index: 110;
-            background: transparent;
+            background: rgba(0,0,0,0.5);
             border: 1px solid var(--accent-color);
             color: var(--accent-color);
-            padding: 10px 25px;
+            padding: 12px 24px;
             font-family: var(--terminal-font);
-            font-size: 0.7rem;
-            letter-spacing: 3px;
+            font-size: 0.75rem;
+            letter-spacing: 2px;
             cursor: pointer;
-            transition: all 0.3s;
+            transition: all 0.4s cubic-bezier(0.19, 1, 0.22, 1);
             text-transform: uppercase;
-            box-shadow: 0 0 10px var(--glow-color);
-        }
-        #hud-toggle:hover {
-            background: var(--accent-color);
-            color: black;
+            box-shadow: 0 0 15px var(--glow-color);
+            backdrop-filter: blur(5px);
+            white-space: nowrap;
         }
 
-        /* --- MINIATURAS Y YOUTUBE --- */
+        /* --- MINIATURAS (VW para escalado automático) --- */
         .secondary-video-container {
-            position: absolute; bottom: 100px; left: 20px;
-            width: 220px; aspect-ratio: 16/9;
-            border-left: 3px solid var(--accent-color);
-            z-index: 10; background: #000; transition: 0.5s;
+            position: absolute;
+            bottom: 80px; /* Separación del botón base */
+            left: 5%;
+            width: 40vw; /* Escala con el ancho de pantalla */
+            max-width: 240px; /* Límite para escritorio */
+            aspect-ratio: 16/9;
+            border-left: 2px solid var(--accent-color);
+            z-index: 10;
+            background: #000;
+            transition: transform 0.4s ease-out;
         }
         
         .live-stream-container {
-            position: absolute; top: 20px; right: 20px;
-            width: 260px; height: 146px;
+            position: absolute;
+            top: 15px;
+            right: 5%;
+            width: 45vw;
+            max-width: 280px;
+            aspect-ratio: 16/9;
             border: 1px solid rgba(255,255,255,0.1);
             z-index: 50;
+            background: #000;
         }
 
-        /* --- HUD (OCULTO POR DEFECTO) --- */
+        /* --- HUD (RESPONSIVO TOTAL) --- */
         .hud {
             position: fixed;
-            bottom: -200px; /* Escondido */
+            bottom: -100%; /* Completamente escondido */
             left: 0; width: 100%;
             background: var(--panel-bg);
             border-top: 1px solid var(--accent-color);
-            padding: 20px 0;
             z-index: 100;
-            backdrop-filter: blur(15px);
-            transition: bottom 0.6s cubic-bezier(0.19, 1, 0.22, 1);
+            backdrop-filter: blur(20px);
+            transition: bottom 0.5s cubic-bezier(0.19, 1, 0.22, 1);
             font-family: var(--terminal-font);
+            box-sizing: border-box;
+            overflow-y: auto; /* Por si el contenido es muy largo en móvil */
+            max-height: 80vh; /* No tapa toda la pantalla */
         }
 
         .hud.active { bottom: 0; }
 
-        .hud-grid {
-            display: grid;
-            grid-template-columns: 1.5fr 1fr 1fr 1fr 1fr;
-            max-width: 1400px; margin: 0 auto; padding: 0 20px;
+        /* Contenedor Flex para Móvil (Columna) */
+        .hud-content {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            padding: 20px;
+            max-width: 1400px;
+            margin: 0 auto;
         }
 
-        .hud-item { border-right: 1px solid rgba(255,180,0,0.15); padding: 0 15px; }
-        .hud-item:last-child { border: none; }
+        .hud-item {
+            text-align: center;
+            border-bottom: 1px solid rgba(255,180,0,0.1);
+            padding-bottom: 10px;
+        }
+        .hud-item:last-child { border: none; padding-bottom: 0; }
 
-        .hud-title { font-size: 0.55rem; text-transform: uppercase; color: var(--accent-color); opacity: 0.7; margin-bottom: 5px; display: block; }
-        .value { font-size: 1.1rem; color: white; display: block; }
+        .hud-title { font-size: 0.6rem; text-transform: uppercase; color: var(--accent-color); opacity: 0.8; margin-bottom: 4px; display: block; letter-spacing: 1px;}
+        .value { font-size: 1rem; color: white; display: block; font-weight: bold;}
 
-        /* --- EFECTO GLITCH ANIMADO --- */
+        /* --- ANIMACIONES Y ESTILOS ESPECÍFICOS --- */
         @keyframes textGlitch {
             0% { transform: translate(0); }
-            2% { transform: translate(-2px, 1px); }
-            4% { transform: translate(2px, -1px); }
+            2% { transform: translate(-1px, 1px); }
+            4% { transform: translate(1px, -1px); }
             6% { transform: translate(0); }
             100% { transform: translate(0); }
         }
-        .glitch { animation: textGlitch 5s infinite; }
+        .glitch { animation: textGlitch 6s infinite; }
 
         .live-tag {
-            color: var(--warning-red); font-size: 0.7rem; font-weight: bold;
-            animation: blink 1.5s infinite; display: flex; align-items: center; gap: 6px;
+            color: var(--warning-red); font-size: 0.75rem; font-weight: bold;
+            animation: blink 2s infinite; display: flex; align-items: center; justify-content: center; gap: 6px;
         }
         @keyframes blink { 50% { opacity: 0.1; } }
 
-        @media (max-width: 768px) {
-            .hud-grid { grid-template-columns: 1fr 1fr; gap: 10px; }
-            #artemis-brand { grid-column: span 2; margin-bottom: 10px; }
-            .secondary-video-container { width: 100px; bottom: 120px; }
-            .live-stream-container { width: 120px; height: 70px; }
+        /* =========================================
+           MEDIA QUERIES (Adaptación a Escritorio)
+           ========================================= */
+        @media (min-width: 769px) {
+            /* Vuelve a modo Grilla en pantallas grandes */
+            .hud-content {
+                flex-direction: row;
+                justify-content: space-around;
+                align-items: center;
+                padding: 15px 30px;
+                height: var(--hud-height);
+            }
+
+            .hud-item {
+                flex: 1;
+                text-align: left;
+                border-bottom: none;
+                border-right: 1px solid rgba(255,180,0,0.15);
+                padding: 0 20px;
+                height: 100%;
+                display: flex; flex-direction: column; justify-content: center;
+            }
+            .hud-item:last-child { border: none; }
+
+            #artemis-brand { flex: 1.5; text-align: left; }
+            .value { font-size: 1.1rem; }
+            
+            /* Ajuste de posición de miniaturas cuando el HUD sube */
+            .hud.active ~ .viewport .secondary-video-container {
+                transform: translateY(calc(-1 * var(--hud-height)));
+            }
         }
     </style>
 </head>
@@ -146,36 +195,16 @@
 
     <div class="scanlines"></div>
 
-    <div class="viewport">
-        <video autoplay muted loop playsinline class="main-video">
-            <source src="img/Moon_Phases_Near_Far_Waning_720.mp4" type="video/mp4">
-        </video>
-
-        <div class="overlay-vignette"></div>
-
-        <button id="hud-toggle" onclick="toggleHUD()">Initialize HUD</button>
-
-        <div class="secondary-video-container" id="path-mini">
-            <video autoplay muted loop playsinline style="width:100%; height:100%; object-fit:cover;">
-                <source src="img/path.mp4" type="video/mp4">
-            </video>
-        </div>
-
-        <div class="live-stream-container">
-            <iframe width="100%" height="100%" src="https://www.youtube.com/embed/WeIVJyufJrE?autoplay=1&mute=1&controls=0" frameborder="0"></iframe>
-        </div>
-    </div>
-
     <footer class="hud" id="main-hud">
-        <div class="hud-grid">
-            <div id="artemis-brand" class="hud-item">
-                <h2 style="margin:0; color:var(--accent-color); font-size:1.1rem;" class="glitch">ORION_CONSOLE_v2.6</h2>
-                <span style="font-size: 0.5rem; opacity: 0.6;">SYSTEM STATUS: NOMINAL</span>
+        <div class="hud-content">
+            <div id="artemis-brand" class="hud-item glitch">
+                <h2 style="margin:0; color:var(--accent-color); font-size:1.1rem; font-family:var(--terminal-font);">ORION_CONSOLE_v2.7</h2>
+                <span style="font-size: 0.55rem; opacity: 0.6; text-transform: uppercase;">System State: Nominal</span>
             </div>
 
             <div class="hud-item">
-                <span class="hud-title">Data Link</span>
-                <span class="live-tag">CONNECTED</span>
+                <span class="hud-title">System Link</span>
+                <span class="live-tag"><span style="width:6px;height:6px;background:red;border-radius:50%"></span> TELEMETRY_ACTIVE</span>
             </div>
 
             <div class="hud-item">
@@ -184,9 +213,9 @@
             </div>
 
             <div class="hud-item">
-                <span class="hud-title">ISS Telemetry</span>
-                <span class="value" style="font-size:0.8rem">LAT: <span id="latitude">--</span></span>
-                <span class="value" style="font-size:0.8rem">VEL: <span id="speed">--</span></span>
+                <span class="hud-title">ISS Position (REF)</span>
+                <span class="value" style="font-size:0.85rem">LAT: <span id="latitude">--</span></span>
+                <span class="value" style="font-size:0.85rem">VEL: <span id="speed">--</span></span>
             </div>
 
             <div class="hud-item">
@@ -196,23 +225,49 @@
         </div>
     </footer>
 
+    <div class="viewport">
+        <video autoplay muted loop playsinline class="main-video">
+            <source src="img/Moon_Phases_Near_Far_Waning_720.mp4" type="video/mp4">
+        </video>
+
+        <div class="overlay-vignette"></div>
+
+        <button id="hud-toggle" onclick="toggleHUD()">Initialize Systems</button>
+
+        <div class="secondary-video-container" id="path-mini">
+            <video autoplay muted loop playsinline style="width:100%; height:100%; object-fit:cover; display:block;">
+                <source src="img/path.mp4" type="video/mp4">
+            </video>
+        </div>
+
+        <div class="live-stream-container">
+            <iframe width="100%" height="100%" src="https://www.youtube.com/embed/WeIVJyufJrE?autoplay=1&mute=1&controls=0&modestbranding=1" frameborder="0" style="display:block;"></iframe>
+        </div>
+    </div>
+
     <script>
-        // Función para mostrar/ocultar el HUD
+        // Función para mostrar/ocultar el HUD (Mejorada para responsividad)
         function toggleHUD() {
             const hud = document.getElementById('main-hud');
             const btn = document.getElementById('hud-toggle');
-            const pathMini = document.getElementById('path-mini');
+            const isDesktop = window.innerWidth > 768;
             
             hud.classList.toggle('active');
             
             if(hud.classList.contains('active')) {
-                btn.innerText = "Hide Systems";
-                btn.style.bottom = "180px"; // Sube el botón con el HUD
-                pathMini.style.bottom = "200px";
+                btn.innerText = "Deactivate Systems";
+                
+                // Calculamos cuánto debe subir el botón
+                if(isDesktop) {
+                    btn.style.bottom = "200px"; // Justo encima del HUD de escritorio
+                } else {
+                    // En móvil, sube dinámicamente según la altura real del HUD desplegado
+                    const hudHeight = hud.offsetHeight;
+                    btn.style.bottom = (hudHeight + 20) + "px";
+                }
             } else {
-                btn.innerText = "Show Data";
-                btn.style.bottom = "30px";
-                pathMini.style.bottom = "100px";
+                btn.innerText = "Initialize Systems";
+                btn.style.bottom = "20px";
             }
         }
 
@@ -223,10 +278,11 @@
         async function getISSData() {
             try {
                 const res = await fetch("https://api.wheretheiss.at/v1/satellites/25544");
+                if(!res.ok) return;
                 const data = await res.json();
                 document.getElementById("latitude").innerText = data.latitude.toFixed(2) + "°";
                 document.getElementById("speed").innerText = Math.round(data.velocity).toLocaleString() + " km/h";
-            } catch (err) { console.error("Signal Lost"); }
+            } catch (err) { console.warn("Signal Instability Detected"); }
         }
 
         function updateTimers() {
@@ -236,14 +292,24 @@
             const hE = Math.floor((diff % 86400000) / 3600000);
             const mE = Math.floor((diff % 3600000) / 60000);
             const sE = Math.floor((diff % 60000) / 1000);
-            document.getElementById("mission-time").innerText = `${dE}d ${hE}h ${mE}m ${sE}s`;
+            
+            document.getElementById("mission-time").innerText = `${dE}d ${hE}h ${mE}m`; // Simplificado para móvil
 
             let left = endDate - now;
             document.getElementById("mission-countdown").innerText = left <= 0 ? "RE-ENTRY" : 
                 `${Math.floor(left / 86400000)}d ${Math.floor((left % 86400000) / 3600000)}h`;
         }
 
-        setInterval(getISSData, 5000);
+        // Ajuste dinámico si se rota el celular
+        window.addEventListener('resize', () => {
+            const hud = document.getElementById('main-hud');
+            const btn = document.getElementById('hud-toggle');
+            if(hud.classList.contains('active') && window.innerWidth <= 768) {
+                btn.style.bottom = (hud.offsetHeight + 20) + "px";
+            }
+        });
+
+        setInterval(getISSData, 10000); // Telemetría más lenta para móvil
         setInterval(updateTimers, 1000);
         getISSData(); updateTimers();
     </script>
