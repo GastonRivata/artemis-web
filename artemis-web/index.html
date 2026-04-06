@@ -11,132 +11,167 @@
             --accent: #ffb400;
             --nasa-blue: #0b3d91;
             --warning: #ff3333;
-            --terminal-bg: rgba(7, 7, 10, 0.95);
-            --border: rgba(255, 180, 0, 0.2);
+            --terminal-bg: rgba(7, 7, 10, 0.85);
+            --border: rgba(255, 180, 0, 0.3);
             --font-mono: 'Roboto Mono', monospace;
+            --font-orbitron: 'Orbitron', sans-serif;
         }
 
         * { box-sizing: border-box; }
 
-        body {
-            margin: 0; background: #000; color: #e0e0e0;
+        body, html {
+            margin: 0; padding: 0;
+            background: #000; color: #e0e0e0;
             font-family: var(--font-mono);
-            overflow: hidden; height: 100vh;
-            display: flex; flex-direction: column;
+            overflow: hidden; height: 100%; width: 100%;
         }
 
         .scanlines {
             position: fixed; inset: 0; z-index: 1000; pointer-events: none;
             background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.1) 50%);
-            background-size: 100% 3px;
+            background-size: 100% 4px; opacity: 0.5;
         }
 
-        .viewport { position: relative; flex: 1; overflow: hidden; z-index: 1; }
+        .viewport { 
+            position: relative; height: 100dvh; width: 100%;
+            overflow: hidden; z-index: 1; 
+        }
         
         #bg-video {
-            position: absolute; 
-            top: 50%; left: 50%;
+            position: absolute; top: 50%; left: 50%;
             min-width: 100%; min-height: 100%;
-            width: auto; height: auto;
             transform: translate(-50%, -50%);
-            object-fit: cover; 
-            z-index: -2;
+            object-fit: cover; z-index: -2;
+          
         }
 
         .overlay-vignette {
             position: absolute; inset: 0;
-            background: radial-gradient(circle, transparent 20%, rgba(0,0,0,0.8) 100%);
+            background: radial-gradient(circle, transparent 30%, rgba(0,0,0,0.9) 100%);
             z-index: -1;
         }
 
+        /* --- MONITOR DE TRAYECTORIA INTEGRADO --- */
+        .path-monitor {
+            position: absolute; 
+            top: 30px; 
+            right: 30px; 
+            width: 220px;
+            z-index: 110;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Contenedor del video con efectos de integración */
+        .video-container {
+            position: relative;
+            width: 100%;
+            background: rgba(0, 0, 0, 0.4);
+            border: 1px solid var(--border);
+            /* Mezcla el video con el fondo (lo negro se vuelve transparente) */
+            mix-blend-mode: screen; 
+            /* Desvanece los bordes del video */
+            -webkit-mask-image: radial-gradient(circle, black 60%, transparent 95%);
+            mask-image: radial-gradient(circle, black 60%, transparent 95%);
+        }
+
+        .path-monitor video {
+            width: 100%;
+            height: auto;
+            display: block;
+            /* Tinte dorado para que combine con la UI */
+            filter: sepia(1) saturate(5) hue-rotate(-10deg) brightness(1.2);
+        }
+
+        /* Decoración de las esquinas */
+        .path-monitor::before, .path-monitor::after {
+            content: '';
+            position: absolute;
+            width: 15px; height: 15px;
+            border: 2px solid var(--accent);
+            z-index: 120;
+        }
+        .path-monitor::before { top: -5px; left: -5px; border-right: 0; border-bottom: 0; }
+        .path-monitor::after { bottom: -5px; right: -5px; border-left: 0; border-top: 0; }
+
+        .monitor-label { 
+            font-size: 0.55rem; color: var(--accent); 
+            padding: 5px 0; letter-spacing: 2px;
+            text-transform: uppercase;
+            display: flex; justify-content: space-between;
+        }
+
+        .monitor-coords {
+            font-size: 0.45rem; color: var(--accent);
+            opacity: 0.6; margin-top: 5px;
+            font-family: var(--font-mono);
+        }
+
+        /* --- RESTO DE LA UI --- */
         .mission-header {
             position: absolute; top: 20px; left: 20px; z-index: 110;
-            display: flex; flex-direction: column; gap: 10px;
+            display: flex; flex-direction: column; gap: 8px;
         }
+
         .mission-header .box {
             border: 1px solid var(--border);
-            padding: 8px 15px; background: var(--terminal-bg);
-            backdrop-filter: blur(5px); display: inline-block;
-            box-shadow: 0 0 15px rgba(255, 180, 0, 0.1);
+            padding: 10px 18px; background: var(--terminal-bg);
+            backdrop-filter: blur(8px);
+            border-left: 4px solid var(--accent);
         }
+
         .mission-header h1 { 
-            margin: 0; font-family: 'Orbitron', sans-serif; font-size: 1.2rem; 
-            letter-spacing: 5px; color: #fff;
+            margin: 0; font-family: var(--font-orbitron); 
+            font-size: clamp(1rem, 4vw, 1.4rem); 
+            letter-spacing: 3px; color: #fff;
             text-shadow: 0 0 10px var(--accent);
         }
 
-        .path-monitor {
-            position: absolute; top: 20px; right: 20px; width: 180px;
-            border: 1px solid var(--border); background: var(--terminal-bg);
-            backdrop-filter: blur(10px); z-index: 50;
-        }
-        .path-monitor video { width: 100%; height: auto; opacity: 0.8; display: block; }
-        .monitor-label { font-size: 0.5rem; color: var(--accent); padding: 4px; text-align: center; border-bottom: 1px solid var(--border); }
-
         .hud-wrapper {
             position: fixed; bottom: 0; left: 0; width: 100%;
-            z-index: 110; transform: translateY(100%);
-            transition: transform 0.5s cubic-bezier(0.19, 1, 0.22, 1);
+            z-index: 120; transform: translateY(calc(100% - 45px));
+            transition: transform 0.6s cubic-bezier(0.23, 1, 0.32, 1);
         }
+
         .hud-wrapper.active { transform: translateY(0); }
 
         #hud-toggle {
-            position: absolute; top: -40px; left: 50%; transform: translateX(-50%);
-            background: var(--terminal-bg); border: 1px solid var(--accent);
-            border-bottom: none; color: var(--accent); padding: 10px 20px; 
-            cursor: pointer; font-family: var(--font-mono); font-size: 0.65rem; 
-            letter-spacing: 2px; backdrop-filter: blur(20px);
+            position: absolute; top: -45px; left: 50%; transform: translateX(-50%);
+            background: var(--accent); border: none; color: #000; 
+            padding: 12px 25px; cursor: pointer; font-family: var(--font-mono); 
+            font-size: 0.75rem; font-weight: bold; letter-spacing: 2px; 
+            clip-path: polygon(10% 0, 90% 0, 100% 100%, 0% 100%);
         }
 
         .hud-main {
-            background: var(--terminal-bg); border-top: 1px solid var(--accent);
-            backdrop-filter: blur(20px); max-height: 50vh; overflow-y: auto;
+            background: var(--terminal-bg); border-top: 2px solid var(--accent);
+            backdrop-filter: blur(25px); max-height: 70vh; overflow-y: auto;
         }
 
         .hud-content {
-            display: grid; grid-template-columns: repeat(5, 1fr);
-            min-width: 800px;
+            display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); width: 100%;
         }
 
         .hud-item {
-            padding: 20px; border-right: 1px solid var(--border);
-            display: flex; flex-direction: column; justify-content: center;
+            padding: 25px; border: 1px solid rgba(255,180,0,0.1);
+            display: flex; flex-direction: column; 
         }
-        .hud-item:last-child { border-right: none; }
 
-        .hud-label { font-size: 0.5rem; color: var(--accent); opacity: 0.7; margin-bottom: 5px; }
-        .hud-value { font-size: 0.8rem; color: #fff; font-weight: 700; white-space: nowrap; }
-        .hud-sub { font-size: 0.6rem; color: #888; margin-top: 2px; }
+        .hud-label { font-size: 0.65rem; color: var(--accent); opacity: 0.8; margin-bottom: 8px; }
+        .hud-value { font-size: 1rem; color: #fff; font-weight: 700; }
 
-        @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.3; } 100% { opacity: 1; } }
-        .status-dot { width: 6px; height: 6px; background: var(--warning); border-radius: 50%; display: inline-block; margin-left: 5px; animation: pulse 1.5s infinite; }
+        @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.2; } }
+        .status-dot { 
+            width: 8px; height: 8px; background: #00ff00; border-radius: 50%; 
+            display: inline-block; margin-left: 8px; animation: pulse 2s infinite; 
+        }
 
-        /* --- AJUSTES RESPONSIVE --- */
         @media (max-width: 768px) {
-            .mission-header { top: 10px; left: 10px; }
-            .mission-header h1 { font-size: 0.9rem; letter-spacing: 2px; }
-            .mission-header .box { padding: 5px 10px; }
-
-            .path-monitor { 
-                width: 110px; 
-                top: auto; 
-                bottom: 50px; 
-                right: 10px; 
+            .path-monitor { width: 150px; right: 15px; top: auto; bottom: 80px; }
+            .hud-content { grid-template-columns: 1fr 1fr; }
+            @media (max-width: 450px) {
+                .path-monitor { width: 120px; }
             }
-            
-            .hud-content {
-                grid-template-columns: repeat(2, 1fr); /* 2 columnas en móvil */
-                min-width: 100%;
-            }
-
-            .hud-item {
-                padding: 15px;
-                border-right: 1px solid var(--border);
-                border-bottom: 1px solid var(--border);
-            }
-            
-            .hud-item:nth-child(2n) { border-right: none; }
-            .hud-value { font-size: 0.7rem; }
         }
     </style>
 </head>
@@ -156,44 +191,50 @@
                 <h1>ARTEMIS II <span class="status-dot"></span></h1>
             </div>
             <div class="box">
-                <span style="font-size: 0.5rem; letter-spacing: 1px;">S/C STATUS: <span style="color: #00ff00;">NOMINAL</span></span>
+                <span style="font-size: 0.6rem; letter-spacing: 2px;">S/C STATUS: <span style="color: #00ff00;">NOMINAL</span></span>
             </div>
         </div>
 
         <div class="path-monitor">
-            <div class="monitor-label">TRAYECT_FEED</div>
-            <video autoplay muted loop playsinline>
-                <source src="img/path.mp4" type="video/mp4">
-            </video>
+            <div class="monitor-label">
+                <span>Trayectoria</span>
+                <span id="rand-pct">88%</span>
+            </div>
+            <div class="video-container">
+                <video autoplay muted loop playsinline>
+                    <source src="img/path.mp4" type="video/mp4">
+                </video>
+            </div>
+            <div class="monitor-coords">
+                LOC: 28.5728° N, 80.6490° W<br>
+                ALT: 384,400 KM
+            </div>
         </div>
     </div>
 
     <div class="hud-wrapper" id="hud-wrap">
-        <button id="hud-toggle" onclick="toggleHUD()">DATA_TERMINAL</button>
-        
+        <button id="hud-toggle" onclick="toggleHUD()">▲ TERMINAL_DATA</button>
         <footer class="hud-main">
             <div class="hud-content">
                 <div class="hud-item">
-                    <span class="hud-label">ORION TELEMETRY</span>
+                    <span class="hud-label">ORION_TELEMETRY</span>
                     <span class="hud-value" id="mission-clock">UTC 00:00:00</span>
-                    <span class="hud-sub" style="color: var(--warning);">MODE: ACTIVE</span>
                 </div>
                 <div class="hud-item">
-                    <span class="hud-label">LUNAR PARAMS</span>
-                    <span class="hud-value">G: <span id="moon-gravity">1.62</span></span>
-                    <span class="hud-sub">RAD: <span id="moon-radius">1,737</span></span>
+                    <span class="hud-label">LUNAR_PARAMS</span>
+                    <span class="hud-value">G: 1.62m/s²</span>
                 </div>
                 <div class="hud-item">
-                    <span class="hud-label">NASA_SOURCE</span>
-                    <span id="nasa-title" class="hud-value" style="font-size: 0.65rem;">FETCHING...</span>
+                    <span class="hud-label">NASA_APOD_SOURCE</span>
+                    <span id="nasa-title" class="hud-value">CONNECTING...</span>
                 </div>
                 <div class="hud-item">
-                    <span class="hud-label">ISS_COORDS</span>
+                    <span class="hud-label">ISS_LOCATION</span>
                     <span class="hud-value" id="iss-pos">LAT: -- / LON: --</span>
                 </div>
                 <div class="hud-item">
-                    <span class="hud-label">MISSION_LOG</span>
-                    <span id="artemis-log" class="hud-value" style="font-size: 0.65rem; color: #00ff00;">STANDBY</span>
+                    <span class="hud-label">S/C_LOG</span>
+                    <span id="artemis-log" class="hud-value" style="color: #00ff00; font-size: 0.75rem;">SYSTEMS_READY</span>
                 </div>
             </div>
         </footer>
@@ -203,29 +244,31 @@
         function toggleHUD() {
             const wrap = document.getElementById('hud-wrap');
             const btn = document.getElementById('hud-toggle');
-            wrap.classList.toggle('active');
-            btn.innerText = wrap.classList.contains('active') ? "CERRAR" : "DATA_TERMINAL";
+            const isActive = wrap.classList.toggle('active');
+            btn.innerText = isActive ? "▼ CLOSE_TERMINAL" : "▲ TERMINAL_DATA";
         }
 
         async function getNasaData() {
             try {
                 const res = await fetch("https://api.nasa.gov/planetary/apod?api_key=DEMO_KEY");
                 const data = await res.json();
-                document.getElementById("nasa-title").innerText = data.title.toUpperCase().substring(0, 20) + "...";
-            } catch (e) { }
+                document.getElementById("nasa-title").innerText = data.title.toUpperCase().substring(0, 20);
+            } catch (e) { document.getElementById("nasa-title").innerText = "OFFLINE"; }
         }
 
         async function getISS() {
             try {
                 const res = await fetch("https://api.wheretheiss.at/v1/satellites/25544");
                 const data = await res.json();
-                document.getElementById("iss-pos").innerText = `${data.latitude.toFixed(1)}°N ${data.longitude.toFixed(1)}°E`;
+                document.getElementById("iss-pos").innerText = `${data.latitude.toFixed(2)}°N ${data.longitude.toFixed(2)}°E`;
             } catch (err) { }
         }
 
         setInterval(() => {
             const now = new Date();
             document.getElementById("mission-clock").innerText = "UTC " + now.toISOString().split('T')[1].split('.')[0];
+            // Cambiar porcentaje random en el monitor para dar vida
+            document.getElementById("rand-pct").innerText = Math.floor(Math.random() * (99 - 90) + 90) + "%";
         }, 1000);
 
         getNasaData();
